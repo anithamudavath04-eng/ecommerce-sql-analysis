@@ -1,0 +1,20 @@
+CREATE DATABASE IF NOT EXISTS ecommerce_analytics;
+USE ecommerce_analytics;
+CREATE TABLE customers (customer_id VARCHAR(20) PRIMARY KEY, customer_unique_id VARCHAR(20), customer_zip_code_prefix INT, customer_city VARCHAR(100), customer_state VARCHAR(5));
+CREATE TABLE products (product_id VARCHAR(20) PRIMARY KEY, product_category_name VARCHAR(50), product_name_length INT, product_description_length INT NULL, product_photos_qty INT NULL, product_weight_g INT NULL, product_length_cm INT, product_height_cm INT, product_width_cm INT);
+CREATE TABLE sellers (seller_id VARCHAR(20) PRIMARY KEY, seller_zip_code_prefix INT, seller_city VARCHAR(100), seller_state VARCHAR(5));
+CREATE TABLE orders (order_id VARCHAR(20) PRIMARY KEY, customer_id VARCHAR(20), order_status VARCHAR(30), order_purchase_timestamp DATETIME, order_approved_at DATETIME NULL, order_delivered_customer_date DATETIME NULL, order_estimated_delivery_date DATETIME, FOREIGN KEY(customer_id) REFERENCES customers(customer_id));
+CREATE TABLE order_items (order_id VARCHAR(20), order_item_id INT, product_id VARCHAR(20), seller_id VARCHAR(20), price DECIMAL(12,2), freight_value DECIMAL(12,2), PRIMARY KEY(order_id,order_item_id), FOREIGN KEY(order_id) REFERENCES orders(order_id), FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(seller_id) REFERENCES sellers(seller_id));
+CREATE TABLE order_payments (order_id VARCHAR(20), payment_sequential INT, payment_type VARCHAR(30), payment_installments INT, payment_value DECIMAL(12,2), PRIMARY KEY(order_id,payment_sequential), FOREIGN KEY(order_id) REFERENCES orders(order_id));
+CREATE TABLE order_reviews (review_id VARCHAR(30) PRIMARY KEY, order_id VARCHAR(20), review_score INT, review_comment_title VARCHAR(255) NULL, review_comment_message VARCHAR(500) NULL, review_creation_date DATETIME, FOREIGN KEY(order_id) REFERENCES orders(order_id));
+CREATE TABLE product_category_translation (product_category_name VARCHAR(50) PRIMARY KEY, product_category_name_english VARCHAR(50));
+-- Import CSVs with LOCAL INFILE. Adjust path to your extracted folder.
+-- SET GLOBAL local_infile=1;
+-- LOAD DATA LOCAL INFILE 'C:/PATH/customers.csv' INTO TABLE customers FIELDS TERMINATED BY ',' ENCLOSED BY '"' IGNORE 1 ROWS;
+-- LOAD DATA LOCAL INFILE 'C:/PATH/products.csv' INTO TABLE products FIELDS TERMINATED BY ',' ENCLOSED BY '"' IGNORE 1 ROWS;
+-- LOAD DATA LOCAL INFILE 'C:/PATH/sellers.csv' INTO TABLE sellers FIELDS TERMINATED BY ',' ENCLOSED BY '"' IGNORE 1 ROWS;
+-- LOAD DATA LOCAL INFILE 'C:/PATH/orders.csv' INTO TABLE orders FIELDS TERMINATED BY ',' ENCLOSED BY '"' IGNORE 1 ROWS;
+-- LOAD DATA LOCAL INFILE 'C:/PATH/order_items.csv' INTO TABLE order_items FIELDS TERMINATED BY ',' ENCLOSED BY '"' IGNORE 1 ROWS;
+-- LOAD DATA LOCAL INFILE 'C:/PATH/order_payments.csv' INTO TABLE order_payments FIELDS TERMINATED BY ',' ENCLOSED BY '"' IGNORE 1 ROWS;
+-- LOAD DATA LOCAL INFILE 'C:/PATH/order_reviews.csv' INTO TABLE order_reviews FIELDS TERMINATED BY ',' ENCLOSED BY '"' IGNORE 1 ROWS;
+-- LOAD DATA LOCAL INFILE 'C:/PATH/product_category_translation.csv' INTO TABLE product_category_translation FIELDS TERMINATED BY ',' ENCLOSED BY '"' IGNORE 1 ROWS;
